@@ -65,17 +65,15 @@ function splitClick() {
   return this.currentTime;
 }
 
-function replay() {}
-
 function startClick() {
   intervalId = setInterval(() => {
     currentTime += 1;
-    console.log(currentTime);
+    // console.log(currentTime);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     currentCharacter.masterTimer.push(currentTime);
     drawPresent();
-    // drawPast();
-  }, 1000 / 1000);
+    replay();
+  }, 1000 / 60);
 }
 
 function generateCharacter(x, y) {
@@ -83,19 +81,28 @@ function generateCharacter(x, y) {
   chronometerInstanceArr.push(character);
 }
 
-// function drawPast() {
-//   if (chronometerInstanceArr.length > 2) {
-//     ctx.drawImage(
-//     for (let i = 0; i < chronometerInstanceArr.length - 2; i++) {
-//       for (let j = 0; j < chronometerInstance[i].instanceTimer.length; j++) {
-//         if (currentTime == chronometerInstaneArr[i].instanceTimer[j])
-//           switch (chronometerInstanceArr[i].instanceKeyPressed[j]) {
-//             case "Left":
-//                 chronometerInstanceArr[i].x -= 7;
-//             case "Right":
-//                 chronometerInstanceArr[i].x -= 8;
-//           }
-//       }
-//     }
-//   }
-// }
+function replay() {
+  if (chronometerInstanceArr.length > 1) {
+    for (let i = 0; i < chronometerInstanceArr.length - 1; i++) {
+      for (let j = 0; j < chronometerInstanceArr[i].instanceTimer.length; j++) {
+        if (currentTime == chronometerInstanceArr[i].instanceTimer[j])
+          // console.log("Time equal!!");
+          switch (chronometerInstanceArr[i].instanceKeyPressed[j]) {
+            case "Left":
+              chronometerInstanceArr[i].x -= 7;
+              break;
+            case "Right":
+              chronometerInstanceArr[i].x += 7;
+              break;
+          }
+        ctx.drawImage(
+          chronometerInstanceArr[i].image,
+          chronometerInstanceArr[i].x,
+          chronometerInstanceArr[i].y,
+          chronometerInstanceArr[i].width,
+          chronometerInstanceArr[i].height
+        );
+      }
+    }
+  }
+}
