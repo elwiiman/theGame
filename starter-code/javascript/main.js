@@ -1,40 +1,47 @@
-function getTimeAndKey(key) {
-  chronometer.instanceTimer.push(chronometer.currentTime);
-  chronometer.instanceKeyPressed.push(key);
+function getTimeAndKey(key, currentCharacter) {
+  currentCharacter.instanceTimer.push(currentTime);
+  currentCharacter.instanceKeyPressed.push(key);
 }
 
 //-----------------------------------------------
 
 let isMasterTimerON = false;
-let chronometerInstanceArr = [];
+// let chronometerInstanceArr = [];
+let currentCharacter;
 let chronometerCurrentInstance = 0;
-let chronometer = new Chronometer(50, 50);
+generateCharacter(50, 50);
+currentCharacter = chronometerInstanceArr[chronometerCurrentInstance];
 
 document.onkeydown = function(e) {
   // tecla enter
   if (e.keyCode === 13) {
-    chronometer.startClick();
+    startClick();
     isMasterTimerON = true;
     console.log("empieza el tiempo!");
   } else if (e.keyCode === 37) {
     // tecla left
-    getTimeAndKey("Left");
-    chronometer.x -= 7;
+    getTimeAndKey("Left", currentCharacter);
+    currentCharacter.x -= 7;
   } else if (e.keyCode === 39) {
     // tecla right
-    getTimeAndKey("Right");
-    chronometer.x += 7;
+    getTimeAndKey("Right", currentCharacter);
+    currentCharacter.x += 7;
   } else if (e.keyCode === 38) {
     //tecla up
-    getTimeAndKey("Up");
+    getTimeAndKey("Up", currentCharacter);
   } else if (e.keyCode === 40) {
     //tecla down
-    getTimeAndKey("Down");
-  } else if (e.keyCode === 32) {
-    // tecla space
-    chronometer.resetClick();
+    getTimeAndKey("Down", currentCharacter);
+  } else if (e.keyCode === 65) {
+    // tecla "A"
+    stopClick();
+    resetClick();
+    generateCharacter(50, 50);
+    chronometerCurrentInstance += 1;
+    currentCharacter = chronometerInstanceArr[chronometerCurrentInstance];
+    startClick();
   } else if (e.keyCode === 83) {
     // tecla s
-    chronometer.stopClick();
+    stopClick();
   }
 };
