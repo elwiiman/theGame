@@ -1,27 +1,51 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-let chronometerInstanceArr = [];
+let characterInstanceArr = [];
 let currentTime = 0;
 let intervalId;
+// const mariosImages = {
+//   first: "https://bit.ly/2L7yH3f",
+//   second: "https://bit.ly/2L3ikoe"
+// };
+// const mariosImages = {
+//   first: "./images/Mario.png"
+//   second: "./images/MarioBW.png"
+// };
 
-class Chronometer {
+class Character {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 100;
-    this.height = 120;
+    this.width = 68;
+    this.height = 140;
     this.intervalId;
     this.instanceTimer = [];
     this.instanceKeyPressed = [];
     this.masterTimer = [0];
     this.image = new Image();
-    this.image.src = "https://bit.ly/2L7yH3f";
+    this.image.src = "./images/color/frontman.png";
+  }
+
+  moveLeft() {
+    this.x -= 7;
+  }
+
+  moveRight() {
+    this.x += 7;
+  }
+
+  jump() {
+    this.y -= 100;
+    console.log(this.y);
   }
 }
 
 function drawPresent() {
   // let currentCharacter = chronometerInstanceArr[chronometerCurrentInstance];
-
+  if (currentCharacter.y < 250) currentCharacter.y += 4;
+  // if (frames % 10 === 0) {
+  //   this.image = this.image === this.image1 ? this.image2 : this.image1;
+  // }
   ctx.drawImage(
     currentCharacter.image,
     currentCharacter.x,
@@ -73,34 +97,40 @@ function startClick() {
     currentCharacter.masterTimer.push(currentTime);
     drawPresent();
     replay();
-  }, 1000 / 60);
+  }, 1000 / 24);
 }
 
 function generateCharacter(x, y) {
-  character = new Chronometer(x, y);
-  chronometerInstanceArr.push(character);
+  character = new Character(x, y);
+  characterInstanceArr.push(character);
 }
 
 function replay() {
-  if (chronometerInstanceArr.length > 1) {
-    for (let i = 0; i < chronometerInstanceArr.length - 1; i++) {
-      for (let j = 0; j < chronometerInstanceArr[i].instanceTimer.length; j++) {
-        if (currentTime == chronometerInstanceArr[i].instanceTimer[j])
+  if (characterInstanceArr.length > 1) {
+    for (let i = 0; i < characterInstanceArr.length - 1; i++) {
+      characterInstanceArr[i].image.src = "./images/gray/frontman.png";
+      if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
+      for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
+        if (currentTime == characterInstanceArr[i].instanceTimer[j])
           // console.log("Time equal!!");
-          switch (chronometerInstanceArr[i].instanceKeyPressed[j]) {
+          switch (characterInstanceArr[i].instanceKeyPressed[j]) {
             case "Left":
-              chronometerInstanceArr[i].x -= 7;
+              characterInstanceArr[i].moveLeft();
               break;
             case "Right":
-              chronometerInstanceArr[i].x += 7;
+              characterInstanceArr[i].moveRight();
+              break;
+            case "Up":
+              characterInstanceArr[i].jump();
               break;
           }
+
         ctx.drawImage(
-          chronometerInstanceArr[i].image,
-          chronometerInstanceArr[i].x,
-          chronometerInstanceArr[i].y,
-          chronometerInstanceArr[i].width,
-          chronometerInstanceArr[i].height
+          characterInstanceArr[i].image,
+          characterInstanceArr[i].x,
+          characterInstanceArr[i].y,
+          characterInstanceArr[i].width,
+          characterInstanceArr[i].height
         );
       }
     }
