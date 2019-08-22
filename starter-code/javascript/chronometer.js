@@ -7,10 +7,21 @@ let intervalId;
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
 // };
-// const mariosImages = {
-//   first: "./images/Mario.png"
-//   second: "./images/MarioBW.png"
-// };
+const characterImages = {
+  frontman: "./images/color/frontman.png",
+  right: "./images/color/manright.png",
+  left: "./images/color/manleft.png",
+  rightWalk: "./images/color/manWalkright.png",
+  leftWalk: "./images/color/manWalkLeft.png"
+};
+
+const characterGrayImages = {
+  frontman: "./images/gray/frontman.png",
+  right: "./images/gray/manright.png",
+  left: "./images/gray/manleft.png",
+  rightWalk: "./images/gray/manWalkright.png",
+  leftWalk: "./images/gray/manWalkLeft.png"
+};
 
 class Character {
   constructor(x, y) {
@@ -22,21 +33,48 @@ class Character {
     this.instanceTimer = [];
     this.instanceKeyPressed = [];
     this.masterTimer = [0];
-    this.image = new Image();
-    this.image.src = "./images/color/frontman.png";
+    this.imageFrontman = new Image();
+    this.imageFrontman.src = characterImages.frontman;
+    this.imageLeft = new Image();
+    this.imageLeft.src = characterImages.left;
+    this.imageRight = new Image();
+    this.imageRight.src = characterImages.right;
+    this.imageWalkLeft = new Image();
+    this.imageWalkLeft.src = characterImages.leftWalk;
+    this.imageWalkRight = new Image();
+    this.imageWalkRight.src = characterImages.rightWalk;
+    this.image = this.imageFrontman;
   }
 
   moveLeft() {
     this.x -= 7;
+    this.image = this.imageLeft;
+    this.animationLeft();
   }
 
   moveRight() {
     this.x += 7;
+    this.image = this.imageRight;
+    this.animationRight();
   }
 
   jump() {
-    this.y -= 100;
+    this.y -= 160;
     console.log(this.y);
+  }
+
+  animationRight() {
+    if (currentTime % 2 === 0) {
+      this.image =
+        this.image === this.imageRight ? this.imageWalkRight : this.imageRight;
+    }
+  }
+
+  animationLeft() {
+    if (currentTime % 2 === 0) {
+      this.image =
+        this.image === this.imageLeft ? this.imageWalkLeft : this.imageLeft;
+    }
   }
 }
 
@@ -97,7 +135,7 @@ function startClick() {
     currentCharacter.masterTimer.push(currentTime);
     drawPresent();
     replay();
-  }, 1000 / 24);
+  }, 1000 / 48);
 }
 
 function generateCharacter(x, y) {
