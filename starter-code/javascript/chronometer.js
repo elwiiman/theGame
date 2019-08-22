@@ -44,6 +44,7 @@ class Character {
     this.imageWalkRight = new Image();
     this.imageWalkRight.src = characterImages.rightWalk;
     this.image = this.imageFrontman;
+    this.isInPast = false;
   }
 
   moveLeft() {
@@ -76,14 +77,19 @@ class Character {
         this.image === this.imageLeft ? this.imageWalkLeft : this.imageLeft;
     }
   }
+
+  pastImagesAssign() {
+    this.imageFrontman.src = characterGrayImages.frontman;
+    this.imageLeft.src = characterGrayImages.left;
+    this.imageRight.src = characterGrayImages.right;
+    this.imageWalkLeft.src = characterGrayImages.leftWalk;
+    this.imageWalkRight.src = characterGrayImages.rightWalk;
+    this.image = this.imageFrontman;
+  }
 }
 
 function drawPresent() {
-  // let currentCharacter = chronometerInstanceArr[chronometerCurrentInstance];
   if (currentCharacter.y < 250) currentCharacter.y += 4;
-  // if (frames % 10 === 0) {
-  //   this.image = this.image === this.image1 ? this.image2 : this.image1;
-  // }
   ctx.drawImage(
     currentCharacter.image,
     currentCharacter.x,
@@ -146,7 +152,6 @@ function generateCharacter(x, y) {
 function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
-      characterInstanceArr[i].image.src = "./images/gray/frontman.png";
       if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])

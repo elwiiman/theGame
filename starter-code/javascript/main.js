@@ -40,6 +40,8 @@ document.onkeydown = function(e) {
       generateCharacter(50, 250);
       characterCurrentInstance += 1;
       currentCharacter = characterInstanceArr[characterCurrentInstance];
+      characterInstanceArr[characterCurrentInstance - 1].isInPast = true;
+      characterInstanceArr[characterCurrentInstance - 1].pastImagesAssign();
       startClick();
       break;
     case 83: // tecla s
