@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 let characterInstanceArr = [];
 let currentTime = 0;
 let intervalId;
+let friction = 0.63;
 // const mariosImages = {
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
@@ -51,13 +52,15 @@ class Character {
   }
 
   moveLeft() {
-    this.x -= 7;
+    this.xVelocity -= 2.5;
+    // this.x -= 7;
     this.image = this.imageLeft;
     this.animationLeft();
   }
 
   moveRight() {
-    this.x += 7;
+    this.xVelocity += 2.5;
+    // this.x += 7;
     this.image = this.imageRight;
     this.animationRight();
   }
@@ -105,11 +108,12 @@ function drawPresent() {
   currentCharacter.fall();
   ctx.drawImage(
     currentCharacter.image,
-    currentCharacter.x,
+    (currentCharacter.x += currentCharacter.xVelocity),
     currentCharacter.y,
     currentCharacter.width,
     currentCharacter.height
   );
+  currentCharacter.xVelocity *= friction;
 }
 
 // getMinutes() {
@@ -154,7 +158,7 @@ function startClick() {
     currentCharacter.masterTimer.push(currentTime);
     drawPresent();
     replay();
-  }, 1000 / 48);
+  }, 1000 / 40);
 }
 
 function generateCharacter(x, y) {
@@ -166,6 +170,7 @@ function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
       characterInstanceArr[i].fall();
+
       // if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])
@@ -186,11 +191,12 @@ function replay() {
 
         ctx.drawImage(
           characterInstanceArr[i].image,
-          characterInstanceArr[i].x,
+          (characterInstanceArr[i].x += characterInstanceArr[i].xVelocity),
           characterInstanceArr[i].y,
           characterInstanceArr[i].width,
           characterInstanceArr[i].height
         );
+        characterInstanceArr[i].xVelocity *= friction;
       }
     }
   }
