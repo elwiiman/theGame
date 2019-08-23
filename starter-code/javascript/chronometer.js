@@ -45,6 +45,9 @@ class Character {
     this.imageWalkRight.src = characterImages.rightWalk;
     this.image = this.imageFrontman;
     this.isInPast = false;
+    this.isJumping = false;
+    this.xVelocity = 0;
+    this.yVelocity = 0;
   }
 
   moveLeft() {
@@ -60,6 +63,7 @@ class Character {
   }
 
   jump() {
+    this.isJumping = true;
     this.y -= 160;
     console.log(this.y);
   }
@@ -86,14 +90,19 @@ class Character {
     this.imageWalkRight.src = characterGrayImages.rightWalk;
     this.image = this.imageFrontman;
   }
-}
 
-function fall() {
-  if (currentCharacter.y < 250) currentCharacter.y += 4;
+  fall() {
+    if (this.y < 250) {
+      this.y += 8;
+    }
+    if (this.y == 250) {
+      this.isJumping = false;
+    }
+  }
 }
 
 function drawPresent() {
-  fall();
+  currentCharacter.fall();
   ctx.drawImage(
     currentCharacter.image,
     currentCharacter.x,
@@ -156,7 +165,8 @@ function generateCharacter(x, y) {
 function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
-      if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
+      characterInstanceArr[i].fall();
+      // if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])
           // console.log("Time equal!!");
@@ -168,7 +178,9 @@ function replay() {
               characterInstanceArr[i].moveRight();
               break;
             case "Up":
-              characterInstanceArr[i].jump();
+              if (characterInstanceArr[i].isJumping !== true) {
+                characterInstanceArr[i].jump();
+              }
               break;
           }
 
