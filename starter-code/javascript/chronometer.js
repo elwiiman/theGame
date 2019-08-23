@@ -33,7 +33,6 @@ class Character {
     this.intervalId;
     this.instanceTimer = [];
     this.instanceKeyPressed = [];
-    this.masterTimer = [0];
     this.imageFrontman = new Image();
     this.imageFrontman.src = characterImages.frontman;
     this.imageLeft = new Image();
@@ -52,34 +51,32 @@ class Character {
   }
 
   moveLeft() {
-    this.xVelocity -= 2.5;
-    // this.x -= 7;
+    this.xVelocity -= 3.0;
     this.image = this.imageLeft;
     this.animationLeft();
   }
 
   moveRight() {
-    this.xVelocity += 2.5;
-    // this.x += 7;
+    this.xVelocity += 3.0;
     this.image = this.imageRight;
     this.animationRight();
   }
 
   jump() {
     this.isJumping = true;
-    this.y -= 160;
-    console.log(this.y);
+    this.yVelocity -= 105;
+    // console.log(this.y);
   }
 
   animationRight() {
-    if (currentTime % 2 === 0) {
+    if (currentTime % 3 === 0) {
       this.image =
         this.image === this.imageRight ? this.imageWalkRight : this.imageRight;
     }
   }
 
   animationLeft() {
-    if (currentTime % 2 === 0) {
+    if (currentTime % 3 === 0) {
       this.image =
         this.image === this.imageLeft ? this.imageWalkLeft : this.imageLeft;
     }
@@ -95,25 +92,36 @@ class Character {
   }
 
   fall() {
-    if (this.y < 250) {
-      this.y += 8;
-    }
-    if (this.y == 250) {
+    this.yVelocity += 9.81; // effect of gravity
+    if (this.y > 1200 - 810 - 140) {
+      //140 is height of character,
+      //810 is distance between border botom of canvas to foot of the character,
+      //1200 is height of canvas
       this.isJumping = false;
+      this.y = 250;
+      this.yVelocity = 0;
     }
+
+    // if (this.y > 217) {
+    //   this.isJumping = false;
+    //   this.y = 218;
+    // }
   }
 }
 
 function drawPresent() {
-  currentCharacter.fall();
+  if (currentCharacter.isJumping == true) {
+    currentCharacter.fall();
+  }
   ctx.drawImage(
     currentCharacter.image,
     (currentCharacter.x += currentCharacter.xVelocity),
-    currentCharacter.y,
+    (currentCharacter.y += currentCharacter.yVelocity),
     currentCharacter.width,
     currentCharacter.height
   );
   currentCharacter.xVelocity *= friction;
+  currentCharacter.yVelocity *= friction;
 }
 
 // getMinutes() {
@@ -153,12 +161,10 @@ function splitClick() {
 function startClick() {
   intervalId = setInterval(() => {
     currentTime += 1;
-    // console.log(currentTime);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    currentCharacter.masterTimer.push(currentTime);
-    drawPresent();
     replay();
-  }, 1000 / 40);
+    drawPresent();
+  }, 1000 / 45);
 }
 
 function generateCharacter(x, y) {
@@ -169,8 +175,18 @@ function generateCharacter(x, y) {
 function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
-      characterInstanceArr[i].fall();
-
+      if (characterInstanceArr[i].isJumping == true) {
+        characterInstanceArr[i].fall();
+      }
+      ctx.drawImage(
+        characterInstanceArr[i].image,
+        (characterInstanceArr[i].x += characterInstanceArr[i].xVelocity),
+        (characterInstanceArr[i].y += characterInstanceArr[i].yVelocity),
+        characterInstanceArr[i].width,
+        characterInstanceArr[i].height
+      );
+      characterInstanceArr[i].xVelocity *= friction;
+      characterInstanceArr[i].yVelocity *= friction;
       // if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])
@@ -188,15 +204,6 @@ function replay() {
               }
               break;
           }
-
-        ctx.drawImage(
-          characterInstanceArr[i].image,
-          (characterInstanceArr[i].x += characterInstanceArr[i].xVelocity),
-          characterInstanceArr[i].y,
-          characterInstanceArr[i].width,
-          characterInstanceArr[i].height
-        );
-        characterInstanceArr[i].xVelocity *= friction;
       }
     }
   }
