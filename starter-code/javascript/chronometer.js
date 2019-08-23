@@ -88,8 +88,12 @@ class Character {
   }
 }
 
-function drawPresent() {
+function fall() {
   if (currentCharacter.y < 250) currentCharacter.y += 4;
+}
+
+function drawPresent() {
+  fall();
   ctx.drawImage(
     currentCharacter.image,
     currentCharacter.x,
