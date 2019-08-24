@@ -3,7 +3,8 @@ const ctx = canvas.getContext("2d");
 let characterInstanceArr = [];
 let currentTime = 0;
 let intervalId;
-let friction = 0.63;
+let friction = 0.62;
+let yFriction = 0.49;
 // const mariosImages = {
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
@@ -46,25 +47,33 @@ class Character {
     this.image = this.imageFrontman;
     this.isInPast = false;
     this.isJumping = false;
+    this.isGoingToRight = false;
+    this.isGoingToLeft = false;
     this.xVelocity = 0;
     this.yVelocity = 0;
   }
 
   moveLeft() {
-    this.xVelocity -= 3.0;
+    this.isGoingToLeft = true;
+    this.isGoingToRight = false;
+    this.xVelocity -= 6.6;
     this.image = this.imageLeft;
     this.animationLeft();
+    console.log("executed_Left");
   }
 
   moveRight() {
-    this.xVelocity += 3.0;
+    this.isGoingToRight = true;
+    this.isGoingToLeft = false;
+    this.xVelocity += 6.6;
     this.image = this.imageRight;
     this.animationRight();
+    console.log("executed_Right");
   }
 
   jump() {
     this.isJumping = true;
-    this.yVelocity -= 105;
+    this.yVelocity -= 135;
     // console.log(this.y);
   }
 
@@ -92,7 +101,7 @@ class Character {
   }
 
   fall() {
-    this.yVelocity += 9.81; // effect of gravity
+    this.yVelocity += 4.81; // effect of gravity
     if (this.y > 1200 - 810 - 140) {
       //140 is height of character,
       //810 is distance between border botom of canvas to foot of the character,
@@ -101,11 +110,6 @@ class Character {
       this.y = 250;
       this.yVelocity = 0;
     }
-
-    // if (this.y > 217) {
-    //   this.isJumping = false;
-    //   this.y = 218;
-    // }
   }
 }
 
@@ -113,6 +117,7 @@ function drawPresent() {
   if (currentCharacter.isJumping == true) {
     currentCharacter.fall();
   }
+
   ctx.drawImage(
     currentCharacter.image,
     (currentCharacter.x += currentCharacter.xVelocity),
@@ -121,7 +126,7 @@ function drawPresent() {
     currentCharacter.height
   );
   currentCharacter.xVelocity *= friction;
-  currentCharacter.yVelocity *= friction;
+  currentCharacter.yVelocity *= yFriction;
 }
 
 // getMinutes() {
@@ -164,6 +169,9 @@ function startClick() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     replay();
     drawPresent();
+    console.log("isJUMP" + currentCharacter.isJumping);
+    console.log(keys);
+    // console.log(currentCharacter.x, currentCharacter.y);
   }, 1000 / 45);
 }
 
@@ -186,7 +194,7 @@ function replay() {
         characterInstanceArr[i].height
       );
       characterInstanceArr[i].xVelocity *= friction;
-      characterInstanceArr[i].yVelocity *= friction;
+      characterInstanceArr[i].yVelocity *= yFriction;
       // if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])
@@ -202,6 +210,12 @@ function replay() {
               if (characterInstanceArr[i].isJumping !== true) {
                 characterInstanceArr[i].jump();
               }
+              break;
+            case "jumpLeft":
+              characterInstanceArr[i].xVelocity -= 25;
+              break;
+            case "jumpRight":
+              characterInstanceArr[i].xVelocity += 25;
               break;
           }
       }
