@@ -7,9 +7,9 @@ function getTimeAndKey(key, currentCharacter) {
 let keys = [];
 let currentCharacter;
 let characterCurrentInstance = 0;
-generateCharacter(50, 250);
+generateCharacter(400, 250);
 currentCharacter = characterInstanceArr[characterCurrentInstance];
-let button = new BlueButton(300, 343);
+let button = new BlueButton(300, 350);
 
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;

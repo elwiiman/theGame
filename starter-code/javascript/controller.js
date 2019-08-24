@@ -8,19 +8,23 @@ function controllerCheck() {
     getTimeAndKey("Down", currentCharacter);
   }
 
-  if (keys[37]) {
+  if (keys[37] && !currentCharacter.isCollidedLeft) {
     // tecla left arrow
     getTimeAndKey("Left", currentCharacter);
     if (currentCharacter.x > 0) {
       // dont let move outside letf border of canvas
       currentCharacter.moveLeft();
+      currentCharacter.isWalkingLeft = true;
+      currentCharacter.isWalkingRight = false;
     }
-  } else if (keys[39]) {
+  } else if (keys[39] && !currentCharacter.isCollidedRight) {
     // tecla right arrow
     getTimeAndKey("Right", currentCharacter);
     if (currentCharacter.x + currentCharacter.width < canvas.width) {
       // dont let move outside right border of canvas
       currentCharacter.moveRight();
+      currentCharacter.isWalkingLeft = false;
+      currentCharacter.isWalkingRight = true;
     }
   }
 
