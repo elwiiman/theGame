@@ -11,11 +11,17 @@ function controllerCheck() {
   if (keys[37]) {
     // tecla left arrow
     getTimeAndKey("Left", currentCharacter);
-    currentCharacter.moveLeft();
+    if (currentCharacter.x > 0) {
+      // dont let move outside letf border of canvas
+      currentCharacter.moveLeft();
+    }
   } else if (keys[39]) {
     // tecla right arrow
     getTimeAndKey("Right", currentCharacter);
-    currentCharacter.moveRight();
+    if (currentCharacter.x + currentCharacter.width < canvas.width) {
+      // dont let move outside right border of canvas
+      currentCharacter.moveRight();
+    }
   }
 
   if (currentCharacter.isJumping && keys[39]) {

@@ -9,6 +9,7 @@ let currentCharacter;
 let characterCurrentInstance = 0;
 generateCharacter(50, 250);
 currentCharacter = characterInstanceArr[characterCurrentInstance];
+let button = new BlueButton(300, 343);
 
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;

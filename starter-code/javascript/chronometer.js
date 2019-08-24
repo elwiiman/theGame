@@ -9,6 +9,12 @@ let yFriction = 0.49;
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
 // };
+
+const buttonImages = {
+  buttonUp: "./images/buttonUp.png",
+  buttonDown: "./images/buttonDown.png"
+};
+
 const characterImages = {
   frontman: "./images/color/frontman.png",
   right: "./images/color/manright.png",
@@ -47,28 +53,20 @@ class Character {
     this.image = this.imageFrontman;
     this.isInPast = false;
     this.isJumping = false;
-    this.isGoingToRight = false;
-    this.isGoingToLeft = false;
     this.xVelocity = 0;
     this.yVelocity = 0;
   }
 
   moveLeft() {
-    this.isGoingToLeft = true;
-    this.isGoingToRight = false;
-    this.xVelocity -= 6.6;
+    this.xVelocity -= 3.8;
     this.image = this.imageLeft;
     this.animationLeft();
-    console.log("executed_Left");
   }
 
   moveRight() {
-    this.isGoingToRight = true;
-    this.isGoingToLeft = false;
-    this.xVelocity += 6.6;
+    this.xVelocity += 3.8;
     this.image = this.imageRight;
     this.animationRight();
-    console.log("executed_Right");
   }
 
   jump() {
@@ -78,14 +76,14 @@ class Character {
   }
 
   animationRight() {
-    if (currentTime % 5 === 0) {
+    if (currentTime % 4 === 0) {
       this.image =
         this.image === this.imageRight ? this.imageWalkRight : this.imageRight;
     }
   }
 
   animationLeft() {
-    if (currentTime % 5 === 0) {
+    if (currentTime % 4 === 0) {
       this.image =
         this.image === this.imageLeft ? this.imageWalkLeft : this.imageLeft;
     }
@@ -109,7 +107,7 @@ class Character {
   }
 
   fall() {
-    this.yVelocity += 4.81; // effect of gravity
+    this.yVelocity += 6.8; // effect of gravity
     if (this.y > 768 - 378 - 125) {
       //125 is height of character,
       //378 is distance between border botom of canvas to foot of the character,
@@ -121,7 +119,23 @@ class Character {
   }
 }
 
+class BlueButton {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 85;
+    this.height = 35;
+    this.image = new Image();
+    this.image.src = buttonImages.buttonUp;
+  }
+
+  draw() {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
+
 function drawPresent() {
+  button.draw();
   if (currentCharacter.isJumping == true) {
     currentCharacter.fall();
   }
@@ -178,7 +192,6 @@ function startClick() {
     controllerCheck();
     replay();
     drawPresent();
-    console.log(characterInstanceArr);
     // console.log(currentCharacter.x, currentCharacter.y);
   }, 1000 / 35);
 }
