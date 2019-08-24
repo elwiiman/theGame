@@ -29,8 +29,8 @@ class Character {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 68;
-    this.height = 140;
+    this.width = 53;
+    this.height = 125;
     this.intervalId;
     this.instanceTimer = [];
     this.instanceKeyPressed = [];
@@ -78,17 +78,25 @@ class Character {
   }
 
   animationRight() {
-    if (currentTime % 3 === 0) {
+    if (currentTime % 5 === 0) {
       this.image =
         this.image === this.imageRight ? this.imageWalkRight : this.imageRight;
     }
   }
 
   animationLeft() {
-    if (currentTime % 3 === 0) {
+    if (currentTime % 5 === 0) {
       this.image =
         this.image === this.imageLeft ? this.imageWalkLeft : this.imageLeft;
     }
+  }
+
+  animationJumpLeft() {
+    this.image = this.imageWalkLeft;
+  }
+
+  animationJumpRight() {
+    this.image = this.imageWalkRight;
   }
 
   pastImagesAssign() {
@@ -102,10 +110,10 @@ class Character {
 
   fall() {
     this.yVelocity += 4.81; // effect of gravity
-    if (this.y > 1200 - 810 - 140) {
-      //140 is height of character,
-      //810 is distance between border botom of canvas to foot of the character,
-      //1200 is height of canvas
+    if (this.y > 768 - 378 - 125) {
+      //125 is height of character,
+      //378 is distance between border botom of canvas to foot of the character,
+      //768 is height of canvas
       this.isJumping = false;
       this.y = 250;
       this.yVelocity = 0;
@@ -167,12 +175,12 @@ function startClick() {
   intervalId = setInterval(() => {
     currentTime += 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    controllerCheck();
     replay();
     drawPresent();
-    console.log("isJUMP" + currentCharacter.isJumping);
-    console.log(keys);
+    console.log(characterInstanceArr);
     // console.log(currentCharacter.x, currentCharacter.y);
-  }, 1000 / 45);
+  }, 1000 / 35);
 }
 
 function generateCharacter(x, y) {
@@ -212,10 +220,10 @@ function replay() {
               }
               break;
             case "jumpLeft":
-              characterInstanceArr[i].xVelocity -= 25;
+              characterInstanceArr[i].animationJumpLeft();
               break;
             case "jumpRight":
-              characterInstanceArr[i].xVelocity += 25;
+              characterInstanceArr[i].animationJumpRight();
               break;
           }
       }
