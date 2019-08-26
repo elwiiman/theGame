@@ -3,28 +3,25 @@ function controllerCheck() {
     // tecla up arrow
     getTimeAndKey("Up", currentCharacter);
     currentCharacter.jump();
+    currentCharacter.isGrounded = false;
   } else if (keys[40]) {
     // tecla down arrow
     getTimeAndKey("Down", currentCharacter);
   }
 
-  if (keys[37] && !currentCharacter.isCollidedLeft) {
+  if (keys[37]) {
     // tecla left arrow
     getTimeAndKey("Left", currentCharacter);
     if (currentCharacter.x > 0) {
-      // dont let move outside letf border of canvas
+      // dont let move outside left border of canvas
       currentCharacter.moveLeft();
-      currentCharacter.isWalkingLeft = true;
-      currentCharacter.isWalkingRight = false;
     }
-  } else if (keys[39] && !currentCharacter.isCollidedRight) {
+  } else if (keys[39]) {
     // tecla right arrow
     getTimeAndKey("Right", currentCharacter);
     if (currentCharacter.x + currentCharacter.width < canvas.width) {
       // dont let move outside right border of canvas
       currentCharacter.moveRight();
-      currentCharacter.isWalkingLeft = false;
-      currentCharacter.isWalkingRight = true;
     }
   }
 

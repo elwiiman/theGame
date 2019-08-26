@@ -14,10 +14,11 @@ let levelGround = 768 - 378 - 125;
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
 // };
+const groundImage = "./images/ground.png";
 
 const buttonImages = {
-  buttonBase: "./images/buttonBase.png",
-  buttonTop: "./images/buttonTop2.png"
+  buttonUp: "./images/buttonUp.png",
+  buttonDown: "./images/buttonDown.png"
 };
 
 const characterImages = {
@@ -35,6 +36,20 @@ const characterGrayImages = {
   rightWalk: "./images/gray/manWalkright.png",
   leftWalk: "./images/gray/manWalkLeft.png"
 };
+
+class Ground {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = canvas.width + 10;
+    this.height = 50;
+    this.image = new Image();
+    this.image.src = groundImage;
+  }
+  draw() {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
 
 class Character {
   constructor(x, y) {
@@ -58,53 +73,61 @@ class Character {
     this.image = this.imageFrontman;
     this.isInPast = false;
     this.isJumping = false;
+    this.isGrounded = false;
     this.xVelocity = 0;
     this.yVelocity = 0;
     // this.characterBottom = this.y + this.height;
     // this.characterRight = this.x + this.width;
     this.isCollidedRight = false;
     this.isCollidedLeft = false;
+    this.isCollidedTop = false;
     this.isCollidedBottom = false;
     this.isWalkingRight = false;
     this.isWalkingLeft = false;
   }
 
-  collisionButtonHorizontal(item) {
-    // if (this.x + 10 > item.x && this.isWalkingRight)
-    if (
-      this.x + this.width > item.x &&
-      this.x + this.width < item.x + item.width &&
-      this.y < item.y + item.height &&
-      this.y + this.height > item.y
-    ) {
-      this.isCollidedRight = true;
-    } else {
-      this.isCollidedRight = false;
-    }
-    if (
-      this.x < item.x + item.width &&
-      this.x > item.x &&
-      this.y < item.y + item.height &&
-      this.y + this.height > item.y
-    ) {
-      this.isCollidedLeft = true;
-    } else {
-      this.isCollidedLeft = false;
-    }
-  }
+  colChecker(shapeB) {
+    // get the vectors to check against
+    let vX = this.x + this.width / 2 - (shapeB.x + shapeB.width / 2),
+      vY = this.y + this.height / 2 - (shapeB.y + shapeB.height / 2),
+      // add the half widths and half heights of the objects
+      hWidths = this.width / 2 + shapeB.width / 2,
+      hHeights = this.height / 2 + shapeB.height / 2,
+      colDir = null;
 
-  collisionBottom(item) {
-    if (
-      this.y + this.height > item.yTop &&
-      this.x < item.xTop + item.widthTop &&
-      this.x + this.width > item.xTop &&
-      this.isJumping
-    ) {
-      this.isCollidedBottom = true;
-      console.log("collision!");
-    } else {
-      this.isCollidedBottom = false;
+    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+      // figures out on which side we are colliding (top, bottom, left, or right)
+      let oX = hWidths - Math.abs(vX),
+        oY = hHeights - Math.abs(vY);
+      if (oX >= oY) {
+        if (vY > 0) {
+          console.log("t");
+          colDir = "t";
+          this.y += oY;
+          this.yVelocity *= -1;
+        } else {
+          console.log("b");
+          colDir = "b";
+          this.y -= oY;
+          this.isJumping = false;
+          this.isGrounded = true;
+        }
+      } else {
+        if (vX > 0) {
+          console.log("r");
+          colDir = "r";
+          this.x += oX;
+          this.xVelocity = 0;
+        } else {
+          this.xVelocity = 0;
+          console.log("l");
+          colDir = "l";
+          this.x -= oX;
+        }
+      }
     }
+    return colDir;
   }
 
   moveLeft() {
@@ -121,8 +144,7 @@ class Character {
 
   jump() {
     this.isJumping = true;
-    this.yVelocity -= 145;
-    // console.log(this.y);
+    this.yVelocity -= 100;
   }
 
   animationRight() {
@@ -158,76 +180,35 @@ class Character {
 
   fall() {
     this.yVelocity += 9.8; // effect of gravity
-    if (this.y > levelGround) {
-      //125 is height of character,
-      //378 is distance between border botom of canvas to foot of the character,
-      //768 is height of canvas
-      this.isJumping = false;
-      this.y = 250;
-      this.yVelocity = 0;
-    }
-    // if (this.isCollidedBottom) {
-    //   console.log("bottomcollision!!!");
-    //   this.isJumping = false;
-    //   this.y = button.y;
-    //   this.yVelocity = 0;
+    // if ((this.isGrounded = true)) {
     // }
   }
 }
 
 class BlueButton {
-  constructor(xBase, yBase) {
-    this.x = xBase;
-    this.y = yBase;
-    this.xTop = xBase + 7.75;
-    this.yTop = yBase - 10;
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
     this.width = 90;
     this.height = 48;
-    this.widthBase = 90;
-    this.heightBase = 25;
-    this.widthTop = 75;
-    this.heightTop = 23;
-    this.imageBaseButton = new Image();
-    this.imageBaseButton.src = buttonImages.buttonBase;
-    this.imageTopButton = new Image();
-    this.imageTopButton.src = buttonImages.buttonTop;
+    this.imageButton = new Image();
+    this.imageButton.src = buttonImages.buttonUp;
   }
 
   draw() {
-    ctx.drawImage(
-      this.imageBaseButton,
-      this.x,
-      this.y,
-      this.widthBase,
-      this.heightBase
-    );
-    ctx.drawImage(
-      this.imageTopButton,
-      this.xTop,
-      this.yTop,
-      this.widthTop,
-      this.heightTop
-    );
+    ctx.drawImage(this.imageButton, this.x, this.y, this.width, this.height);
   }
 }
 
-// function detectButtonCollision(button) {
-//   if (currentCharacter.collisionButtonHorizontal(button)) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
-
 function drawPresent() {
-  button.draw();
-  currentCharacter.collisionButtonHorizontal(button);
-  currentCharacter.collisionBottom(button);
-
-  if (currentCharacter.isJumping == true) {
-    currentCharacter.fall();
-  }
-
+  // currentCharacter.isGrounded = false;
+  ground.draw(); // dibuja el piso
+  currentCharacter.colChecker(ground);
+  buttonArr.forEach(button => {
+    button.draw();
+    currentCharacter.colChecker(button);
+  });
+  currentCharacter.fall();
   ctx.drawImage(
     currentCharacter.image,
     (currentCharacter.x += currentCharacter.xVelocity),
@@ -280,7 +261,6 @@ function startClick() {
     controllerCheck();
     replay();
     drawPresent();
-    console.log(currentCharacter.y, button.yTop);
   }, 1000 / 35);
 }
 
@@ -292,9 +272,13 @@ function generateCharacter(x, y) {
 function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
-      if (characterInstanceArr[i].isJumping == true) {
-        characterInstanceArr[i].fall();
-      }
+      ground.draw(); // dibuja el piso
+      characterInstanceArr[i].colChecker(ground);
+      buttonArr.forEach(button => {
+        button.draw();
+        characterInstanceArr[i].colChecker(button);
+      });
+      characterInstanceArr[i].fall();
       ctx.drawImage(
         characterInstanceArr[i].image,
         (characterInstanceArr[i].x += characterInstanceArr[i].xVelocity),
@@ -310,14 +294,20 @@ function replay() {
           // console.log("Time equal!!");
           switch (characterInstanceArr[i].instanceKeyPressed[j]) {
             case "Left":
-              characterInstanceArr[i].moveLeft();
+              if (characterInstanceArr[i].x > 0)
+                characterInstanceArr[i].moveLeft();
               break;
             case "Right":
-              characterInstanceArr[i].moveRight();
+              if (
+                characterInstanceArr[i].x + characterInstanceArr[i].width <
+                canvas.width
+              )
+                characterInstanceArr[i].moveRight();
               break;
             case "Up":
               if (characterInstanceArr[i].isJumping !== true) {
                 characterInstanceArr[i].jump();
+                characterInstanceArr[i].isGrounded = false;
               }
               break;
             case "jumpLeft":

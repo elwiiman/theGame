@@ -5,11 +5,14 @@ function getTimeAndKey(key, currentCharacter) {
 
 //-----------------------------------------------
 let keys = [];
+let ground = new Ground(-5, 470 - 35);
 let currentCharacter;
 let characterCurrentInstance = 0;
-generateCharacter(400, 250);
+generateCharacter(50, 470 - 35 - 125);
 currentCharacter = characterInstanceArr[characterCurrentInstance];
-let button = new BlueButton(300, 350);
+let button = new BlueButton(600, 470 - 18 - 48);
+let button_2 = new BlueButton(200, 470 - 18 - 48);
+let buttonArr = [button, button_2];
 
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;
@@ -22,7 +25,7 @@ document.onkeydown = function(e) {
     // tecla A
     stopClick();
     resetClick();
-    generateCharacter(50, 250);
+    generateCharacter(50, 470 - 35 - 125);
     characterCurrentInstance += 1;
     currentCharacter = characterInstanceArr[characterCurrentInstance];
     characterInstanceArr[characterCurrentInstance - 1].isInPast = true;
