@@ -5,6 +5,11 @@ let currentTime = 0;
 let intervalId;
 let friction = 0.55;
 let yFriction = 0.49;
+let levelGround = 768 - 378 - 125;
+//125 is height of character,
+//378 is distance between border botom of canvas to foot of the character,
+//768 is height of canvas
+
 // const mariosImages = {
 //   first: "https://bit.ly/2L7yH3f",
 //   second: "https://bit.ly/2L3ikoe"
@@ -89,8 +94,14 @@ class Character {
   }
 
   collisionBottom(item) {
-    if (this.y < item.y + item.height && this.y + this.height > item.y) {
+    if (
+      this.y + this.height > item.yTop &&
+      this.x < item.xTop + item.widthTop &&
+      this.x + this.width > item.xTop &&
+      this.isJumping
+    ) {
       this.isCollidedBottom = true;
+      console.log("collision!");
     } else {
       this.isCollidedBottom = false;
     }
@@ -147,7 +158,7 @@ class Character {
 
   fall() {
     this.yVelocity += 9.8; // effect of gravity
-    if (this.y > 768 - 378 - 125) {
+    if (this.y > levelGround) {
       //125 is height of character,
       //378 is distance between border botom of canvas to foot of the character,
       //768 is height of canvas
@@ -155,19 +166,21 @@ class Character {
       this.y = 250;
       this.yVelocity = 0;
     }
-    if (this.isCollidedBottom) {
-      console.log("bottomcollision!!!");
-      this.isJumping = false;
-      this.y = button.y;
-      this.yVelocity = 0;
-    }
+    // if (this.isCollidedBottom) {
+    //   console.log("bottomcollision!!!");
+    //   this.isJumping = false;
+    //   this.y = button.y;
+    //   this.yVelocity = 0;
+    // }
   }
 }
 
 class BlueButton {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+  constructor(xBase, yBase) {
+    this.x = xBase;
+    this.y = yBase;
+    this.xTop = xBase + 7.75;
+    this.yTop = yBase - 10;
     this.width = 90;
     this.height = 48;
     this.widthBase = 90;
@@ -178,8 +191,6 @@ class BlueButton {
     this.imageBaseButton.src = buttonImages.buttonBase;
     this.imageTopButton = new Image();
     this.imageTopButton.src = buttonImages.buttonTop;
-    this.buttonBottom = this.y + this.heightBase;
-    this.buttonRight = this.x + this.widthBase;
   }
 
   draw() {
@@ -192,8 +203,8 @@ class BlueButton {
     );
     ctx.drawImage(
       this.imageTopButton,
-      this.x + 7.75,
-      this.y - 10,
+      this.xTop,
+      this.yTop,
       this.widthTop,
       this.heightTop
     );
@@ -211,7 +222,7 @@ class BlueButton {
 function drawPresent() {
   button.draw();
   currentCharacter.collisionButtonHorizontal(button);
-  // currentCharacter.collisionBottom(button);
+  currentCharacter.collisionBottom(button);
 
   if (currentCharacter.isJumping == true) {
     currentCharacter.fall();
@@ -269,7 +280,7 @@ function startClick() {
     controllerCheck();
     replay();
     drawPresent();
-    // console.log(currentCharacter.x, currentCharacter.y);
+    console.log(currentCharacter.y, button.yTop);
   }, 1000 / 35);
 }
 
