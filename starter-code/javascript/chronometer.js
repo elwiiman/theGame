@@ -5,7 +5,7 @@ let currentTime = 0;
 let intervalId;
 let friction = 0.55;
 let yFriction = 0.49;
-let levelGround = 768 - 378 - 125;
+// let levelGround = 768 - 378 - 125;
 //125 is height of character,
 //378 is distance between border botom of canvas to foot of the character,
 //768 is height of canvas
@@ -16,9 +16,10 @@ let levelGround = 768 - 378 - 125;
 // };
 const groundImage = "./images/ground.png";
 
-const buttonImages = {
-  buttonUp: "./images/buttonUp.png",
-  buttonDown: "./images/buttonDown.png"
+const plattformImages = {
+  plattformBase: "./images/plattform/plattformBase.png",
+  plattformTop: "./images/plattform/plattformTop.png",
+  plattform: "./images/plattform/plattform.png"
 };
 
 const characterImages = {
@@ -76,14 +77,10 @@ class Character {
     this.isGrounded = false;
     this.xVelocity = 0;
     this.yVelocity = 0;
-    // this.characterBottom = this.y + this.height;
-    // this.characterRight = this.x + this.width;
     this.isCollidedRight = false;
     this.isCollidedLeft = false;
     this.isCollidedTop = false;
     this.isCollidedBottom = false;
-    this.isWalkingRight = false;
-    this.isWalkingLeft = false;
   }
 
   colChecker(shapeB) {
@@ -102,12 +99,12 @@ class Character {
         oY = hHeights - Math.abs(vY);
       if (oX >= oY) {
         if (vY > 0) {
-          console.log("t");
+          // console.log("t");
           colDir = "t";
           this.y += oY;
           this.yVelocity *= -1;
         } else {
-          console.log("b");
+          // console.log("b");
           colDir = "b";
           this.y -= oY;
           this.isJumping = false;
@@ -115,13 +112,13 @@ class Character {
         }
       } else {
         if (vX > 0) {
-          console.log("r");
+          // console.log("r");
           colDir = "r";
           this.x += oX;
           this.xVelocity = 0;
         } else {
           this.xVelocity = 0;
-          console.log("l");
+          // console.log("l");
           colDir = "l";
           this.x -= oX;
         }
@@ -189,25 +186,76 @@ class BlueButton {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 90;
-    this.height = 48;
-    this.imageButton = new Image();
-    this.imageButton.src = buttonImages.buttonUp;
+    this.width = 85;
+    this.height = 18;
+    this.maxY = y;
+    this.minY = y - 20;
+    this.imagePlattform = new Image();
+    this.imagePlattform.src = plattformImages.plattform;
+    this.imagePlattformBase = new Image();
+    this.imagePlattformBase.src = plattformImages.plattformBase;
+    this.imagePlattformTop = new Image();
+    this.imagePlattformTop.src = plattformImages.plattformTop;
+    this.active = false;
+  }
+
+  colChecker(shapeB) {
+    // get the vectors to check against
+    let vX = this.x + this.width / 2 - (shapeB.x + shapeB.width / 2),
+      vY = this.y + this.height / 2 - (shapeB.y + shapeB.height / 2),
+      // add the half widths and half heights of the objects
+      hWidths = this.width / 2 + shapeB.width / 2,
+      hHeights = this.height / 2 + shapeB.height / 2;
+
+    console.log(
+      "vX: " + vX,
+      "hwidths: " + hWidths,
+      "vY: " + vY,
+      "hHeights: " + hHeights
+    );
+
+    let condition = Math.abs(vX) < hWidths && Math.abs(vY) === hHeights;
+    console.log("condition: " + condition);
+    if (condition) {
+      this.active = true;
+    } else {
+      this.active = false;
+    }
   }
 
   draw() {
-    ctx.drawImage(this.imageButton, this.x, this.y, this.width, this.height);
+    ctx.drawImage(
+      this.imagePlattformTop,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+  }
+}
+
+function drawPlattforms() {
+  plattformArr.forEach(plattformElement => {
+    if (plattformElement.active == true) {
+      if (plattformElement.y < plattformElement.maxY) plattformElement.y += 4;
+    } else {
+      if (plattformElement.y > plattformElement.minY) plattformElement.y -= 4;
+    }
+    plattformElement.draw();
+  });
+}
+
+function plattformColliderCheck(plattformArr, characterArray) {
+  for (let i = 0; i < characterArray.length; i++) {
+    for (let j = 0; j < plattformArr.length; j++) {
+      characterArray[i].colChecker(plattformArr[j]);
+      plattformArr[j].colChecker(characterArray[i]);
+    }
   }
 }
 
 function drawPresent() {
-  // currentCharacter.isGrounded = false;
-  ground.draw(); // dibuja el piso
   currentCharacter.colChecker(ground);
-  buttonArr.forEach(button => {
-    button.draw();
-    currentCharacter.colChecker(button);
-  });
   currentCharacter.fall();
   ctx.drawImage(
     currentCharacter.image,
@@ -259,9 +307,16 @@ function startClick() {
     currentTime += 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     controllerCheck();
+    ground.draw(); // dibuja el piso
+    drawPlattforms();
+    plattformColliderCheck(plattformArr, characterInstanceArr);
     replay();
     drawPresent();
-  }, 1000 / 35);
+    console.log(
+      "plat 0:" + plattformArr[0].active,
+      "plat 1: " + plattformArr[1].active
+    );
+  }, 1000 / 60);
 }
 
 function generateCharacter(x, y) {
@@ -272,12 +327,7 @@ function generateCharacter(x, y) {
 function replay() {
   if (characterInstanceArr.length > 1) {
     for (let i = 0; i < characterInstanceArr.length - 1; i++) {
-      ground.draw(); // dibuja el piso
       characterInstanceArr[i].colChecker(ground);
-      buttonArr.forEach(button => {
-        button.draw();
-        characterInstanceArr[i].colChecker(button);
-      });
       characterInstanceArr[i].fall();
       ctx.drawImage(
         characterInstanceArr[i].image,
@@ -288,7 +338,6 @@ function replay() {
       );
       characterInstanceArr[i].xVelocity *= friction;
       characterInstanceArr[i].yVelocity *= yFriction;
-      // if (characterInstanceArr[i].y < 250) characterInstanceArr[i].y += 4;
       for (let j = 0; j < characterInstanceArr[i].instanceTimer.length; j++) {
         if (currentTime == characterInstanceArr[i].instanceTimer[j])
           // console.log("Time equal!!");

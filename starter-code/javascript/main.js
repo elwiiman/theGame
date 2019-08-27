@@ -10,9 +10,9 @@ let currentCharacter;
 let characterCurrentInstance = 0;
 generateCharacter(50, 470 - 35 - 125);
 currentCharacter = characterInstanceArr[characterCurrentInstance];
-let button = new BlueButton(600, 470 - 18 - 48);
-let button_2 = new BlueButton(200, 470 - 18 - 48);
-let buttonArr = [button, button_2];
+let plattform_1 = new BlueButton(200, 470 - 18 - 33);
+let plattform_2 = new BlueButton(600, 470 - 18 - 33);
+let plattformArr = [plattform_1, plattform_2];
 
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;
