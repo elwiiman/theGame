@@ -1,3 +1,7 @@
+//esta funcion tiene como objetivo ejecutarr los comandos
+//de movimiento de auerdo a estados del personaje
+// y a las teclas presionadas
+
 function controllerCheck() {
   if (!currentCharacter.isJumping && keys[38]) {
     // tecla up arrow
