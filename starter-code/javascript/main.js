@@ -24,6 +24,7 @@ document.onkeydown = function(e) {
   }
   if (keys[65]) {
     // tecla A
+    getTimeAndKey("A", currentCharacter);
     stopClick(); //para el set interval
     resetClick(); // hace reset a la variable de tiempo "maestro"
     generateCharacter(50, 470 - 35 - 125); //genera una nueva instancia de personaje la cual sera ahora el del "presente"

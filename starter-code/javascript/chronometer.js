@@ -10,6 +10,11 @@ let yFriction = 0.49;
 //seccion para cargar imagenes
 const groundImage = "./images/ground.png";
 
+const doorImage = {
+  activeDoor: "./images/door/activeDoor.png",
+  inactiveDoor: "./images/door/inactiveDoor.png"
+};
+
 const plattformImages = {
   plattformBase: "./images/plattform/plattformBase.png",
   plattformTop: "./images/plattform/plattformTop.png",
@@ -21,7 +26,8 @@ const characterImages = {
   right: "./images/color/manright.png",
   left: "./images/color/manleft.png",
   rightWalk: "./images/color/manWalkright.png",
-  leftWalk: "./images/color/manWalkLeft.png"
+  leftWalk: "./images/color/manWalkLeft.png",
+  transparentMan: "./images/color/transparentMan.png"
 };
 
 const characterGrayImages = {
@@ -29,7 +35,8 @@ const characterGrayImages = {
   right: "./images/gray/manright.png",
   left: "./images/gray/manleft.png",
   rightWalk: "./images/gray/manWalkright.png",
-  leftWalk: "./images/gray/manWalkLeft.png"
+  leftWalk: "./images/gray/manWalkLeft.png",
+  transparentMan: "./images/gray/transparentMan.png"
 };
 
 class Ground {
@@ -55,6 +62,8 @@ class Character {
     this.intervalId;
     this.instanceTimer = []; // arreglo que guarda los tiempos en los que las teclas de comando son oprimidas
     this.instanceKeyPressed = []; // arreglo que guarda qué teclas fueron oprimidas
+    this.imageTransparent = new Image();
+    this.imageTransparent.src = characterImages.transparentMan;
     this.imageFrontman = new Image();
     this.imageFrontman.src = characterImages.frontman;
     this.imageLeft = new Image();
@@ -213,6 +222,7 @@ class Character {
     this.imageRight.src = characterGrayImages.right;
     this.imageWalkLeft.src = characterGrayImages.leftWalk;
     this.imageWalkRight.src = characterGrayImages.rightWalk;
+    this.imageTransparent.src = characterGrayImages.transparentMan;
     this.image = this.imageFrontman;
   }
 
@@ -288,10 +298,10 @@ function plattformColliderCheck(plattformArr, characterArray) {
     for (let j = 0; j < plattformArr.length; j++) {
       let colDir = characterArray[i].colCheckerPlattforms(plattformArr[j]);
       console.log(colDir);
-      if (colDir == "b") {
-        plattformArr[j].active = true;
-      } else {
+      if (colDir != "b") {
         plattformArr[j].active = false;
+      } else {
+        plattformArr[j].active = true;
       }
     }
   }
@@ -362,8 +372,9 @@ function startClick() {
     ground.draw(); // dibuja el piso
     plattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
-    replay(); // ejecuta la funcion para las replicas
     drawPresent(); // dibuja el "presente"
+    replay(); // ejecuta la funcion para las replicas
+
     console.log(
       "plat 0:" + plattformArr[0].active,
       "plat 1: " + plattformArr[1].active
@@ -380,7 +391,8 @@ function replay() {
   //funcion para dibujar a las replicas
   if (characterInstanceArr.length > 1) {
     //ejecuta hasta que haya mas de una instancia de personajes
-    for (let i = 0; i < characterInstanceArr.length - 1; i++) {
+    for (let i = 0; i <= characterInstanceArr.length - 2; i++) {
+      console.log(i);
       // para todas las instancias menos la del presente (menos la màs nueva)
       characterInstanceArr[i].colChecker(ground); // colisiones de las replicas con el piso
       characterInstanceArr[i].fall(); //aplica gravedad a las replicas
@@ -424,6 +436,10 @@ function replay() {
               break;
             case "jumpRight":
               characterInstanceArr[i].animationJumpRight();
+              break;
+            case "A":
+              characterInstanceArr[i].image =
+                characterInstanceArr[i].imageTransparent;
               break;
           }
       }
