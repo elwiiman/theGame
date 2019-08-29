@@ -4,6 +4,21 @@ function getTimeAndKey(key, currentCharacter) {
   currentCharacter.instanceKeyPressed.push(key); // hace push en el arreglo de keycodes presionados, en la instancia del "presente"
 }
 
+function rutineForSetCharacterCopies() {
+  getTimeAndKey("A", currentCharacter);
+  stopClick(); //para el set interval
+  resetClick(); // hace reset a la variable de tiempo "maestro"
+  generateCharacter(75, 470 - 35 - 125); //genera una nueva instancia de personaje la cual sera ahora el del "presente"
+  characterCurrentInstance += 1; // aumenta en uno el indice para indicar cual es la actual instancia (instancia del "presente")
+  currentCharacter = characterInstanceArr[characterCurrentInstance]; //asignacion del personaje actual
+  characterInstanceArr[characterCurrentInstance - 1].isInPast = true; //indica que la instancia anterior ahora es "del Pasado"
+  characterInstanceArr[characterCurrentInstance - 1].pastImagesAssign(); // corre el metodo que asigna las imagendes del personaje para representar los personajes del "pasado"
+  for (i = 0; i <= characterInstanceArr.length - 2; i++) {
+    characterInstanceArr[i].hasReturned = false;
+  }
+  startClick(); //inicia nuevamente la secuencia de tiempo
+}
+
 //-----------------------------------------------
 let keys = []; // arreglo de todas las teclas presionadas
 let ground = new Ground(-5, 470 - 35); // nueva instancia para el piso
@@ -25,16 +40,15 @@ document.onkeydown = function(e) {
   }
   if (keys[65]) {
     // tecla A
-    if (door.active) {
-      getTimeAndKey("A", currentCharacter);
-      stopClick(); //para el set interval
-      resetClick(); // hace reset a la variable de tiempo "maestro"
-      generateCharacter(75, 470 - 35 - 125); //genera una nueva instancia de personaje la cual sera ahora el del "presente"
-      characterCurrentInstance += 1; // aumenta en uno el indice para indicar cual es la actual instancia (instancia del "presente")
-      currentCharacter = characterInstanceArr[characterCurrentInstance]; //asignacion del personaje actual
-      characterInstanceArr[characterCurrentInstance - 1].isInPast = true; //indica que la instancia anterior ahora es "del Pasado"
-      characterInstanceArr[characterCurrentInstance - 1].pastImagesAssign(); // corre el metodo que asigna las imagendes del personaje para representar los personajes del "pasado"
-      startClick(); //inicia nuevamente la secuencia de tiempo
+    if (door.active && characterCurrentInstance == 0) {
+      rutineForSetCharacterCopies();
+    } else {
+      if (
+        door.active &&
+        characterInstanceArr[characterCurrentInstance - 1].hasReturned == true
+      ) {
+        rutineForSetCharacterCopies();
+      }
     }
   }
 

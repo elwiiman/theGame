@@ -104,6 +104,7 @@ class Character {
     this.isCollidedTop = false;
     this.isCollidedBottom = false;
     this.isCollidedWithPlattform = false;
+    this.hasReturned = false;
   }
   overlapCheck(item) {
     return (
@@ -308,12 +309,25 @@ class Plattform {
 function evalOverlap() {
   console.log("aqui estoy");
   console.log(currentCharacter.overlapCheck(door));
-  if (currentCharacter.overlapCheck(door)) {
-    door.active = true;
-    door.image = door.imageActive;
+  if (characterCurrentInstance == 0) {
+    if (currentCharacter.overlapCheck(door)) {
+      door.active = true;
+      door.image = door.imageActive;
+    } else {
+      door.active = false;
+      door.image = door.imageInactive;
+    }
   } else {
-    door.active = false;
-    door.image = door.imageInactive;
+    if (
+      currentCharacter.overlapCheck(door) &&
+      characterInstanceArr[characterCurrentInstance - 1].hasReturned == true
+    ) {
+      door.active = true;
+      door.image = door.imageActive;
+    } else {
+      door.active = false;
+      door.image = door.imageInactive;
+    }
   }
 }
 
@@ -351,6 +365,7 @@ function plattformColliderCheck(plattformArr, characterArray) {
 // })
 
 function drawPresent() {
+  console.log("has returned" + currentCharacter.hasReturned);
   currentCharacter.colChecker(ground); //verifica colison con el suelo
   currentCharacter.fall(); //aplica gravedad
   ctx.drawImage(
@@ -429,6 +444,7 @@ function replay() {
   if (characterInstanceArr.length > 1) {
     //ejecuta hasta que haya mas de una instancia de personajes
     for (let i = 0; i <= characterInstanceArr.length - 2; i++) {
+      console.log("has returned" + characterInstanceArr[i].hasReturned);
       // para todas las instancias menos la del presente (menos la màs nueva)
       characterInstanceArr[i].colChecker(ground); // colisiones de las replicas con el piso
       characterInstanceArr[i].fall(); //aplica gravedad a las replicas
@@ -476,6 +492,7 @@ function replay() {
             case "A":
               characterInstanceArr[i].image =
                 characterInstanceArr[i].imageTransparent;
+              characterInstanceArr[i].hasReturned = true;
               break;
           }
       }
