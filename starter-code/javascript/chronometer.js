@@ -53,6 +53,25 @@ class Ground {
   }
 }
 
+class Door {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 100;
+    this.height = 140;
+    this.imageInactive = new Image();
+    this.imageInactive.src = doorImage.inactiveDoor;
+    this.imageActive = new Image();
+    this.imageActive.src = doorImage.activeDoor;
+    this.image = new Image();
+    this.image = this.imageInactive;
+    this.active = false;
+  }
+  draw() {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
+
 class Character {
   constructor(x, y) {
     this.x = x;
@@ -86,6 +105,14 @@ class Character {
     this.isCollidedBottom = false;
     this.isCollidedWithPlattform = false;
   }
+  overlapCheck(item) {
+    return (
+      this.x < item.x + item.width &&
+      this.x + this.width > item.x &&
+      this.y < item.y + item.height &&
+      this.y + this.height > item.y
+    );
+  }
 
   colChecker(shapeB) {
     // metodo para verificar colisiones entre personaje y objetos del entorno en general
@@ -104,12 +131,10 @@ class Character {
         oY = hHeights - Math.abs(vY);
       if (oX >= oY) {
         if (vY > 0) {
-          // console.log("t");
           colDir = "t";
           this.y += oY;
           this.yVelocity *= -1;
         } else {
-          // console.log("b");
           colDir = "b";
           this.y -= oY;
           this.isJumping = false;
@@ -117,13 +142,11 @@ class Character {
         }
       } else {
         if (vX > 0) {
-          // console.log("r");
           colDir = "r";
           this.x += oX;
           this.xVelocity = 0;
         } else {
           this.xVelocity = 0;
-          // console.log("l");
           colDir = "l";
           this.x -= oX;
         }
@@ -254,12 +277,12 @@ class Plattform {
       hWidths = this.width / 2 + shapeB.width / 2,
       hHeights = this.height / 2 + shapeB.height / 2;
 
-    console.log(
-      "vX: " + vX,
-      "hwidths: " + hWidths,
-      "vY: " + vY,
-      "hHeights: " + hHeights
-    );
+    // console.log(
+    //   "vX: " + vX,
+    //   "hwidths: " + hWidths,
+    //   "vY: " + vY,
+    //   "hHeights: " + hHeights
+    // );
 
     let condition = Math.abs(vX) < hWidths && Math.abs(vY) === hHeights; // condicion que se cumple si algo colisiona con la parte superior de plataforma
     console.log("condition: " + condition);
@@ -282,6 +305,18 @@ class Plattform {
   }
 }
 
+function evalOverlap() {
+  console.log("aqui estoy");
+  console.log(currentCharacter.overlapCheck(door));
+  if (currentCharacter.overlapCheck(door)) {
+    door.active = true;
+    door.image = door.imageActive;
+  } else {
+    door.active = false;
+    door.image = door.imageInactive;
+  }
+}
+
 function drawPlattforms() {
   plattformArr.forEach(plattformElement => {
     if (plattformElement.active == true) {
@@ -297,7 +332,7 @@ function plattformColliderCheck(plattformArr, characterArray) {
   for (let i = 0; i < characterArray.length; i++) {
     for (let j = 0; j < plattformArr.length; j++) {
       let colDir = characterArray[i].colCheckerPlattforms(plattformArr[j]);
-      console.log(colDir);
+      // console.log(colDir);
       if (colDir != "b") {
         plattformArr[j].active = false;
       } else {
@@ -370,15 +405,17 @@ function startClick() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     controllerCheck(); //ejecuta los comandos de movimiento de acuerdo a las teclas presionadas
     ground.draw(); // dibuja el piso
+    door.draw();
+
     plattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
     drawPresent(); // dibuja el "presente"
     replay(); // ejecuta la funcion para las replicas
-
-    console.log(
-      "plat 0:" + plattformArr[0].active,
-      "plat 1: " + plattformArr[1].active
-    );
+    evalOverlap();
+    // console.log(
+    //   "plat 0:" + plattformArr[0].active,
+    //   "plat 1: " + plattformArr[1].active
+    // );
   }, 1000 / 35);
 }
 
@@ -392,7 +429,6 @@ function replay() {
   if (characterInstanceArr.length > 1) {
     //ejecuta hasta que haya mas de una instancia de personajes
     for (let i = 0; i <= characterInstanceArr.length - 2; i++) {
-      console.log(i);
       // para todas las instancias menos la del presente (menos la màs nueva)
       characterInstanceArr[i].colChecker(ground); // colisiones de las replicas con el piso
       characterInstanceArr[i].fall(); //aplica gravedad a las replicas

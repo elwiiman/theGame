@@ -9,10 +9,11 @@ let keys = []; // arreglo de todas las teclas presionadas
 let ground = new Ground(-5, 470 - 35); // nueva instancia para el piso
 let currentCharacter; //declaracion de la variable que tendra al personaje del "presente"
 let characterCurrentInstance = 0; // servira como indice para indicar cual es la instancia del "presente" en una arreglo de instancias de personajes
-generateCharacter(50, 470 - 35 - 125); // ejecuta la funcion para generar un personaje en las coordenadas indicadas
+generateCharacter(75, 470 - 35 - 125); // ejecuta la funcion para generar un personaje en las coordenadas indicadas
 currentCharacter = characterInstanceArr[characterCurrentInstance]; //indica cual es el personaje actual
-let plattform_1 = new Plattform(200, 470 - 18 - 33);
-let plattform_2 = new Plattform(600, 470 - 18 - 33);
+let door = new Door(50, 470 - 35 - 115);
+let plattform_1 = new Plattform(270, 470 - 18 - 33);
+let plattform_2 = new Plattform(610, 470 - 18 - 33);
 let plattformArr = [plattform_1, plattform_2];
 
 document.onkeydown = function(e) {
@@ -24,15 +25,17 @@ document.onkeydown = function(e) {
   }
   if (keys[65]) {
     // tecla A
-    getTimeAndKey("A", currentCharacter);
-    stopClick(); //para el set interval
-    resetClick(); // hace reset a la variable de tiempo "maestro"
-    generateCharacter(50, 470 - 35 - 125); //genera una nueva instancia de personaje la cual sera ahora el del "presente"
-    characterCurrentInstance += 1; // aumenta en uno el indice para indicar cual es la actual instancia (instancia del "presente")
-    currentCharacter = characterInstanceArr[characterCurrentInstance]; //asignacion del personaje actual
-    characterInstanceArr[characterCurrentInstance - 1].isInPast = true; //indica que la instancia anterior ahora es "del Pasado"
-    characterInstanceArr[characterCurrentInstance - 1].pastImagesAssign(); // corre el metodo que asigna las imagendes del personaje para representar los personajes del "pasado"
-    startClick(); //inicia nuevamente la secuencia de tiempo
+    if (door.active) {
+      getTimeAndKey("A", currentCharacter);
+      stopClick(); //para el set interval
+      resetClick(); // hace reset a la variable de tiempo "maestro"
+      generateCharacter(75, 470 - 35 - 125); //genera una nueva instancia de personaje la cual sera ahora el del "presente"
+      characterCurrentInstance += 1; // aumenta en uno el indice para indicar cual es la actual instancia (instancia del "presente")
+      currentCharacter = characterInstanceArr[characterCurrentInstance]; //asignacion del personaje actual
+      characterInstanceArr[characterCurrentInstance - 1].isInPast = true; //indica que la instancia anterior ahora es "del Pasado"
+      characterInstanceArr[characterCurrentInstance - 1].pastImagesAssign(); // corre el metodo que asigna las imagendes del personaje para representar los personajes del "pasado"
+      startClick(); //inicia nuevamente la secuencia de tiempo
+    }
   }
 
   if (keys[83]) {
