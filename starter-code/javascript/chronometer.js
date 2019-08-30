@@ -351,6 +351,7 @@ function evalOverlap() {
 
 function drawPlattforms() {
   plattformArr.forEach(plattformElement => {
+    console.log(plattformElement.active);
     if (plattformElement.active == true) {
       if (plattformElement.y < plattformElement.maxY) {
         plattformElement.y += 4; //aumenta posicion en y hasta maxY
@@ -399,15 +400,12 @@ function plattformWithCharacterColliderCheck(
       } else {
         plattformArr[j].action = false;
       }
-      console.log(
-        j,
-        plattformArr[j].active,
-        colDirWithCharacter
-        // colDirWithGround,
-        // plattformArr[j].action
-      );
-      plattformArr[j].active = true;
-      if (plattformArr[j].active && colDirWithCharacter === "t") {
+
+      // colDirWithGround,
+      // plattformArr[j].action
+
+      // plattformArr[j].active = true;
+      if (colDirWithCharacter === "t") {
         plattformArr[j].active = true;
         continue salta;
       } else {
@@ -415,6 +413,11 @@ function plattformWithCharacterColliderCheck(
         // plattformArr[j].colChecker(characterArray[i]);
       }
     }
+    // console.log(
+    //   j,
+    //   plattformArr[j].active
+    //    colDirWithCharacter
+    // );
   }
 }
 
