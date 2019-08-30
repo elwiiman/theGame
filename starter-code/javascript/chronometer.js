@@ -266,32 +266,50 @@ class Plattform {
     this.imagePlattformTop = new Image();
     this.imagePlattformTop.src = plattformImages.plattformTop;
     this.active = false;
+    this.action = false;
     this.isCollided = false;
   }
 
   colChecker(shapeB) {
-    //metodo para verificar colisiones en la parte superior de plataformas
+    //metodo para verificar colisiones entre personaje y plataformas
     // get the vectors to check against
     let vX = this.x + this.width / 2 - (shapeB.x + shapeB.width / 2),
       vY = this.y + this.height / 2 - (shapeB.y + shapeB.height / 2),
       // add the half widths and half heights of the objects
       hWidths = this.width / 2 + shapeB.width / 2,
       hHeights = this.height / 2 + shapeB.height / 2;
-
-    // console.log(
-    //   "vX: " + vX,
-    //   "hwidths: " + hWidths,
-    //   "vY: " + vY,
-    //   "hHeights: " + hHeights
-    // );
-
-    let condition = Math.abs(vX) < hWidths && Math.abs(vY) === hHeights; // condicion que se cumple si algo colisiona con la parte superior de plataforma
-    console.log("condition: " + condition);
-    if (condition) {
-      this.isCollided = true;
-    } else {
-      this.isCollided = false;
+    let colDir;
+    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+      // figures out on which side we are colliding (top, bottom, left, or right)
+      let oX = hWidths - Math.abs(vX),
+        oY = hHeights - Math.abs(vY);
+      if (oX >= oY) {
+        if (vY > 0) {
+          colDir = "t"; // colision en top
+          // this.y += oY;
+          // this.yVelocity *= -1;
+        } else {
+          colDir = "b"; // colisione en bottom
+        }
+      }
     }
+    //   } else {
+    //     if (vX > 0) {
+    //       colDir = "r"; // colisione en right
+    //       this.x += oX;
+    //       this.xVelocity = 0;
+    //     } else {
+    //       colDir = "l"; // colision en left
+    //       this.x -= oX;
+    //       this.xVelocity = 0;
+    //     }
+    //   }
+    // }
+    // if (colDir != "b") {
+    //   shapeB.isCollided = false;
+    // }
+    return colDir;
   }
 
   draw() {
@@ -334,28 +352,68 @@ function evalOverlap() {
 function drawPlattforms() {
   plattformArr.forEach(plattformElement => {
     if (plattformElement.active == true) {
-      if (plattformElement.y < plattformElement.maxY) plattformElement.y += 4; //aumenta posicion en y hasta maxY
+      if (plattformElement.y < plattformElement.maxY) {
+        plattformElement.y += 4; //aumenta posicion en y hasta maxY
+      }
     } else {
-      if (plattformElement.y > plattformElement.minY) plattformElement.y -= 4; //disminuye posicion en y hasta maxY
+      if (plattformElement.y > plattformElement.minY) {
+        plattformElement.y -= 4; //disminuye posicion en y hasta maxY
+      }
     }
     plattformElement.draw();
   });
 }
 
-function plattformColliderCheck(plattformArr, characterArray) {
+function characterWithPlattformColliderCheck(plattformArr, characterArray) {
   for (let i = 0; i < characterArray.length; i++) {
     for (let j = 0; j < plattformArr.length; j++) {
       let colDir = characterArray[i].colCheckerPlattforms(plattformArr[j]);
-      console.log(plattformArr[j].active, colDir);
+      // console.log(plattformArr[j].active, colDir);
+      // plattformArr[j].active = true;
+      // if (plattformArr[j].active && colDir === "b") {
+      //   plattformArr[j].active = true;
+      //   return;
+      // } else {
+      //   plattformArr[j].active = false;
+      //   characterArray[i].colCheckerPlattforms(plattformArr[j]);
+      // }
+    }
+  }
+}
+
+function plattformWithCharacterColliderCheck(
+  plattformArr,
+  characterArray,
+  ground
+) {
+  let colDirWithCharacter;
+  let colDirWithGround;
+  salta: for (let j = 0; j < plattformArr.length; j++) {
+    // recorre todas las plataformas
+    for (let i = 0; i < characterArray.length; i++) {
+      // recorre todos los personajes
+      colDirWithCharacter = plattformArr[j].colChecker(characterArray[i]); //obtiene el lugar de colision de una plataforma con un personaje
+      colDirWithGround = plattformArr[j].colChecker(ground); //obtiene el lugar de colision de una plataforma con el piso
+      if (colDirWithGround === "b") {
+        plattformArr[j].action = true;
+      } else {
+        plattformArr[j].action = false;
+      }
+      console.log(
+        j,
+        plattformArr[j].active,
+        colDirWithCharacter
+        // colDirWithGround,
+        // plattformArr[j].action
+      );
       plattformArr[j].active = true;
-      if (plattformArr[j].active && colDir === "b") {
+      if (plattformArr[j].active && colDirWithCharacter === "t") {
         plattformArr[j].active = true;
-        return;
+        continue salta;
       } else {
         plattformArr[j].active = false;
-        characterArray[i].colCheckerPlattforms(plattformArr[j]);
+        // plattformArr[j].colChecker(characterArray[i]);
       }
-      // console.log(colDir);
     }
   }
 }
@@ -425,7 +483,12 @@ function startClick() {
     controllerCheck(); //ejecuta los comandos de movimiento de acuerdo a las teclas presionadas
     ground.draw(); // dibuja el piso
     door.draw();
-    plattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
+    plattformWithCharacterColliderCheck(
+      plattformArr,
+      characterInstanceArr,
+      ground
+    );
+    characterWithPlattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
     replay(); // ejecuta la funcion para las replicas
     drawPresent(); // dibuja el "presente"

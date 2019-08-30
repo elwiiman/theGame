@@ -59,7 +59,7 @@ document.onkeydown = function(e) {
     stopClick();
   }
 
-  if (keys[40]) {
+  if (keys[40] || keys[37] || keys[39]) {
     // tecla down arrow
     e.preventDefault();
   }
