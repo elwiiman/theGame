@@ -307,8 +307,8 @@ class Plattform {
 }
 
 function evalOverlap() {
-  console.log("aqui estoy");
-  console.log(currentCharacter.overlapCheck(door));
+  // console.log("aqui estoy");
+  // console.log(currentCharacter.overlapCheck(door));
   if (characterCurrentInstance == 0) {
     if (currentCharacter.overlapCheck(door)) {
       door.active = true;
@@ -346,12 +346,16 @@ function plattformColliderCheck(plattformArr, characterArray) {
   for (let i = 0; i < characterArray.length; i++) {
     for (let j = 0; j < plattformArr.length; j++) {
       let colDir = characterArray[i].colCheckerPlattforms(plattformArr[j]);
-      // console.log(colDir);
-      if (colDir != "b") {
-        plattformArr[j].active = false;
-      } else {
+      console.log(plattformArr[j].active, colDir);
+      plattformArr[j].active = true;
+      if (plattformArr[j].active && colDir === "b") {
         plattformArr[j].active = true;
+        return;
+      } else {
+        plattformArr[j].active = false;
+        characterArray[i].colCheckerPlattforms(plattformArr[j]);
       }
+      // console.log(colDir);
     }
   }
 }
@@ -365,7 +369,7 @@ function plattformColliderCheck(plattformArr, characterArray) {
 // })
 
 function drawPresent() {
-  console.log("has returned" + currentCharacter.hasReturned);
+  // console.log("has returned" + currentCharacter.hasReturned);
   currentCharacter.colChecker(ground); //verifica colison con el suelo
   currentCharacter.fall(); //aplica gravedad
   ctx.drawImage(
@@ -421,11 +425,10 @@ function startClick() {
     controllerCheck(); //ejecuta los comandos de movimiento de acuerdo a las teclas presionadas
     ground.draw(); // dibuja el piso
     door.draw();
-
     plattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
-    drawPresent(); // dibuja el "presente"
     replay(); // ejecuta la funcion para las replicas
+    drawPresent(); // dibuja el "presente"
     evalOverlap();
     // console.log(
     //   "plat 0:" + plattformArr[0].active,
@@ -444,7 +447,7 @@ function replay() {
   if (characterInstanceArr.length > 1) {
     //ejecuta hasta que haya mas de una instancia de personajes
     for (let i = 0; i <= characterInstanceArr.length - 2; i++) {
-      console.log("has returned" + characterInstanceArr[i].hasReturned);
+      // console.log("has returned" + characterInstanceArr[i].hasReturned);
       // para todas las instancias menos la del presente (menos la màs nueva)
       characterInstanceArr[i].colChecker(ground); // colisiones de las replicas con el piso
       characterInstanceArr[i].fall(); //aplica gravedad a las replicas

@@ -5,6 +5,7 @@ function getTimeAndKey(key, currentCharacter) {
 }
 
 function rutineForSetCharacterCopies() {
+  //rutina que será llamada siempre que existan las condiciones para crear una copia
   getTimeAndKey("A", currentCharacter);
   stopClick(); //para el set interval
   resetClick(); // hace reset a la variable de tiempo "maestro"
@@ -33,8 +34,9 @@ let plattformArr = [plattform_1, plattform_2];
 
 document.onkeydown = function(e) {
   keys[e.keyCode] = true;
-  // tecla enter
+
   if (keys[13]) {
+    // tecla enter
     startClick();
     console.log("empieza el tiempo");
   }
