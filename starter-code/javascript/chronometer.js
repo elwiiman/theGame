@@ -137,7 +137,7 @@ class Character {
           this.yVelocity *= -1;
         } else {
           colDir = "b";
-          this.y -= oY;
+          this.y -= oY + 10;
           this.isJumping = false;
           this.isGrounded = true;
         }
@@ -177,7 +177,7 @@ class Character {
           this.yVelocity *= -1;
         } else {
           colDir = "b"; // colisione en bottom
-          this.y -= oY;
+          this.y -= oY + 10;
           this.isJumping = false;
           this.isGrounded = true;
           shapeB.isCollided = true;

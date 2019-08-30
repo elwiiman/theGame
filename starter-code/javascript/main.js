@@ -27,9 +27,9 @@ let currentCharacter; //declaracion de la variable que tendra al personaje del "
 let characterCurrentInstance = 0; // servira como indice para indicar cual es la instancia del "presente" en una arreglo de instancias de personajes
 generateCharacter(75, 470 - 35 - 125); // ejecuta la funcion para generar un personaje en las coordenadas indicadas
 currentCharacter = characterInstanceArr[characterCurrentInstance]; //indica cual es el personaje actual
-let door = new Door(50, 470 - 35 - 115);
-let plattform_1 = new Plattform(270, 470 - 18 - 33);
-let plattform_2 = new Plattform(610, 470 - 18 - 33);
+let door = new Door(50, 470 - 35 - 130);
+let plattform_1 = new Plattform(270, 470 - 18 - 50);
+let plattform_2 = new Plattform(610, 470 - 18 - 50);
 let plattformArr = [plattform_1, plattform_2];
 
 document.onkeydown = function(e) {
