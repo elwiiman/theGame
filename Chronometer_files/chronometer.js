@@ -62,8 +62,6 @@ class ObstacleDoor {
   constructor(x, y, height) {
     this.x = x;
     this.y = y;
-    this.yMin = -250;
-    this.yMax = y;
     this.width = 40;
     this.height = height;
     this.image = new Image();
@@ -357,7 +355,7 @@ function evalOverlapDoor() {
 
 function drawPlattforms() {
   plattformArr.forEach(plattformElement => {
-    console.log(plattformElement.active);
+    // console.log(plattformElement.active);
     if (plattformElement.active == true) {
       if (plattformElement.y < plattformElement.maxY) {
         plattformElement.y += 4; //aumenta posicion en y hasta maxY
@@ -372,24 +370,15 @@ function drawPlattforms() {
 }
 
 function drawObstacleDoors() {
-  if (obstacleDoorArr.length == plattformArr.length) {
-    for (let i = 0; i < obstacleDoorArr.length; i++) {
-      for (let j = 0; j < plattformArr.length; j++) {
-        if (i == j) {
-          if (plattformArr[j].active == true) {
-            console.log(obstacleDoorArr[i].y);
-            if (obstacleDoorArr[i].y > obstacleDoorArr[i].yMin)
-              obstacleDoorArr[i].y -= 5;
-          } else {
-            console.log(obstacleDoorArr[i].y);
-            if (obstacleDoorArr[i].y <= obstacleDoorArr[i].yMax)
-              obstacleDoorArr[i].y += 15;
-          }
+  obstacleDoorArr.forEach((obstacleDoor, doorIndex) => {
+    plattformArr.forEach((plattform, plattIndex) => {
+      if (doorIndex == plattIndex) {
+        if (plattform[plattIndex].active == true) {
+          obstacleDoor[plattIndex].height -= 5;
         }
       }
-      obstacleDoorArr[i].draw();
-    }
-  }
+    });
+  });
 }
 
 function characterWithPlattformColliderCheck(plattformArr, characterArr) {
@@ -505,14 +494,18 @@ function startClick() {
     );
     characterWithPlattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
-    characterWithObstacleDoorColliderCheck(
-      obstacleDoorArr,
-      characterInstanceArr
-    );
-    drawObstacleDoors();
+    // characterWithObstacleDoorColliderCheck(
+    //   obstacleDoorArr,
+    //   characterInstanceArr
+    // );
+    // drawObstacleDoors();
     replay(); // ejecuta la funcion para las replicas
     drawPresent(); // dibuja el "presente"
     evalOverlapDoor();
+    // console.log(
+    //   "plat 0:" + plattformArr[0].active,
+    //   "plat 1: " + plattformArr[1].active
+    // );
   }, 1000 / 35);
 }
 
