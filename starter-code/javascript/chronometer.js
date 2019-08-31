@@ -10,6 +10,11 @@ let yFriction = 0.49;
 //seccion para cargar imagenes
 const groundImage = "./images/ground.png";
 
+const diamondImage = {
+  colorDiamond: "./images/diamond/diamond.png",
+  transparentDiamond: "./images/diamond/diamondTransparent.png"
+};
+
 const doorImage = {
   activeDoor: "./images/door/activeDoor.png",
   inactiveDoor: "./images/door/inactiveDoor.png"
@@ -43,6 +48,30 @@ const characterGrayImages = {
   leftWalk: "./images/gray/manWalkLeft.png",
   transparentMan: "./images/gray/transparentMan.png"
 };
+
+class Diamond {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 60;
+    this.height = 35;
+    this.yMin = y;
+    this.yMax = y + 10;
+    this.imageDiamond = new Image();
+    this.imageDiamond.src = diamondImage.colorDiamond;
+    this.imageTransparentDiamond = new Image();
+    this.imageTransparentDiamond.src = diamondImage.transparentDiamond;
+    this.image = new Image();
+    this.image = this.imageDiamond;
+    this.isGoingDown = true;
+    this.isGoingUp = false;
+  }
+
+  draw() {
+    console.log(this.y, this.yMin, this.yMax);
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
+}
 
 class Ground {
   constructor(x, y) {
@@ -357,7 +386,7 @@ function evalOverlapDoor() {
 
 function drawPlattforms() {
   plattformArr.forEach(plattformElement => {
-    console.log(plattformElement.active);
+    // console.log(plattformElement.active);
     if (plattformElement.active == true) {
       if (plattformElement.y < plattformElement.maxY) {
         plattformElement.y += 4; //aumenta posicion en y hasta maxY
@@ -377,13 +406,13 @@ function drawObstacleDoors() {
       for (let j = 0; j < plattformArr.length; j++) {
         if (i == j) {
           if (plattformArr[j].active == true) {
-            console.log(obstacleDoorArr[i].y);
+            // console.log(obstacleDoorArr[i].y);
             if (obstacleDoorArr[i].y > obstacleDoorArr[i].yMin)
               obstacleDoorArr[i].y -= 5;
           } else {
-            console.log(obstacleDoorArr[i].y);
+            // console.log(obstacleDoorArr[i].y);
             if (obstacleDoorArr[i].y <= obstacleDoorArr[i].yMax)
-              obstacleDoorArr[i].y += 15;
+              obstacleDoorArr[i].y += 20;
           }
         }
       }
@@ -513,6 +542,7 @@ function startClick() {
     replay(); // ejecuta la funcion para las replicas
     drawPresent(); // dibuja el "presente"
     evalOverlapDoor();
+    diamond.draw();
   }, 1000 / 35);
 }
 
