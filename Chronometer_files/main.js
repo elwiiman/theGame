@@ -29,11 +29,10 @@ generateCharacter(75, 470 - 35 - 125); // ejecuta la funcion para generar un per
 currentCharacter = characterInstanceArr[characterCurrentInstance]; //indica cual es el personaje actual
 let ground = new Ground(-5, 470 - 35); // nueva instancia para el piso
 let door = new Door(50, 470 - 35 - 130);
-let plattform_1 = new Plattform(250, 470 - 18 - 50);
+let plattform_1 = new Plattform(270, 470 - 18 - 50);
 let plattform_2 = new Plattform(610, 470 - 18 - 50);
-let obstacleDoor_1 = new ObstacleDoor(450, -25, 450);
-let obstacleDoor_2 = new ObstacleDoor(800, -25, 450);
-let diamond = new Diamond(870, 200);
+let obstacleDoor_1 = new ObstacleDoor(350, 470 - 18 - 45, 100);
+let obstacleDoor_2 = new ObstacleDoor(700, 470 - 18 - 45, 100);
 
 let plattformArr = [plattform_1, plattform_2];
 let obstacleDoorArr = [obstacleDoor_1, obstacleDoor_2];

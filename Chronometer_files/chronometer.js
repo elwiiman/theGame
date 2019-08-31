@@ -10,11 +10,6 @@ let yFriction = 0.49;
 //seccion para cargar imagenes
 const groundImage = "./images/ground.png";
 
-const diamondImage = {
-  colorDiamond: "./images/diamond/diamond.png",
-  transparentDiamond: "./images/diamond/diamondTransparent.png"
-};
-
 const doorImage = {
   activeDoor: "./images/door/activeDoor.png",
   inactiveDoor: "./images/door/inactiveDoor.png"
@@ -49,30 +44,6 @@ const characterGrayImages = {
   transparentMan: "./images/gray/transparentMan.png"
 };
 
-class Diamond {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.width = 60;
-    this.height = 35;
-    this.yMin = y;
-    this.yMax = y + 10;
-    this.imageDiamond = new Image();
-    this.imageDiamond.src = diamondImage.colorDiamond;
-    this.imageTransparentDiamond = new Image();
-    this.imageTransparentDiamond.src = diamondImage.transparentDiamond;
-    this.image = new Image();
-    this.image = this.imageDiamond;
-    this.isGoingDown = true;
-    this.isGoingUp = false;
-  }
-
-  draw() {
-    console.log(this.y, this.yMin, this.yMax);
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-  }
-}
-
 class Ground {
   constructor(x, y) {
     this.x = x;
@@ -91,8 +62,6 @@ class ObstacleDoor {
   constructor(x, y, height) {
     this.x = x;
     this.y = y;
-    this.yMin = -250;
-    this.yMax = y;
     this.width = 40;
     this.height = height;
     this.image = new Image();
@@ -401,24 +370,15 @@ function drawPlattforms() {
 }
 
 function drawObstacleDoors() {
-  if (obstacleDoorArr.length == plattformArr.length) {
-    for (let i = 0; i < obstacleDoorArr.length; i++) {
-      for (let j = 0; j < plattformArr.length; j++) {
-        if (i == j) {
-          if (plattformArr[j].active == true) {
-            // console.log(obstacleDoorArr[i].y);
-            if (obstacleDoorArr[i].y > obstacleDoorArr[i].yMin)
-              obstacleDoorArr[i].y -= 5;
-          } else {
-            // console.log(obstacleDoorArr[i].y);
-            if (obstacleDoorArr[i].y <= obstacleDoorArr[i].yMax)
-              obstacleDoorArr[i].y += 20;
-          }
+  obstacleDoorArr.forEach((obstacleDoor, doorIndex) => {
+    plattformArr.forEach((plattform, plattIndex) => {
+      if (doorIndex == plattIndex) {
+        if (plattform[plattIndex].active == true) {
+          obstacleDoor[plattIndex].height -= 5;
         }
       }
-      obstacleDoorArr[i].draw();
-    }
-  }
+    });
+  });
 }
 
 function characterWithPlattformColliderCheck(plattformArr, characterArr) {
@@ -534,15 +494,18 @@ function startClick() {
     );
     characterWithPlattformColliderCheck(plattformArr, characterInstanceArr); // revisa colisiones entre plataformas y personajes
     drawPlattforms(); // dibuja las plataformas
-    characterWithObstacleDoorColliderCheck(
-      obstacleDoorArr,
-      characterInstanceArr
-    );
-    drawObstacleDoors();
+    // characterWithObstacleDoorColliderCheck(
+    //   obstacleDoorArr,
+    //   characterInstanceArr
+    // );
+    // drawObstacleDoors();
     replay(); // ejecuta la funcion para las replicas
     drawPresent(); // dibuja el "presente"
     evalOverlapDoor();
-    diamond.draw();
+    // console.log(
+    //   "plat 0:" + plattformArr[0].active,
+    //   "plat 1: " + plattformArr[1].active
+    // );
   }, 1000 / 35);
 }
 
